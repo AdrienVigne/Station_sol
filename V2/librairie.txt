@@ -1,0 +1,4 @@
+cartopy : conda ...
+opencv : pip install opencv-python
+Pyside2 : pip install PySide2
+poyqtgraph : pip install git+https://github.com/pyqtgraph/pyqtgraph

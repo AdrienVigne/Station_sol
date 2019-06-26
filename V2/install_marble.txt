@@ -1,0 +1,4 @@
+librairie necessaire en plus de Qt4
+a faire avec sudo apt-get install
+Cmake
+kdelibs5-dev and libkonq5-dev

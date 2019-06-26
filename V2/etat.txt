@@ -1,0 +1,20 @@
+Version fonctionnelle : 
+-gps 
+-capteurs
+-servo moteur antenne mvt immédiat 
+-envoie des données a la fipy 
+
+Pb : 
+-si tout lance pb vitesse affichage camera 
+=> idée a cause du timer pour l'affichage à verifier 
+=> => accelerer le timer en évitant la repetition des valeurs 
+=> => thread pour l'affichage des graph 
+
+
+A faire : 
+-Altitude 
+-Meilleur afficahge gps 
+-controle de l'orientation de la camera 
+-menu
+-logo 
+
