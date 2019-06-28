@@ -4,6 +4,7 @@ from PySide2.QtWebEngineWidgets import QWebEngineView
 from PySide2.QtCore import QUrl
 from pyqtgraph.widgets import MatplotlibWidget as mw
 import tilemapbase
+import numpy as np
 
 class Affichage_GPS(QWidget):
     """docstring for Affichage_GPS."""
@@ -43,20 +44,21 @@ class Affichage_GPS(QWidget):
         self.Timer.timeout.connect(self.gps_waypoints)
 
     def variable_update(self):
-        if self.fenetre_graph.Matrice is not None :
-            self.Latitude = self.fenetre_graph.Matrice[1:,10]
-            self.Longitude = self.fenetre_graph.Matrice[1:,11]
-            self.Altitude = self.fenetre_graph.Matrice[1:,12]
-
+        print(self.fenetre_graph.update_graph.Matrice is None)
+        if self.fenetre_graph.update_graph.Matrice is not None :
+            self.Latitude = self.fenetre_graph.update_graph.Matrice[1:,10]
+            self.Longitude = self.fenetre_graph.update_graph.Matrice[1:,11]
+            self.Altitude = self.fenetre_graph.update_graph.Matrice[1:,12]
+            print("coucou")
             #print(type(self.Latitude))
             #print(self.Latitude.shape)
 
     def gps_carte_fond(self):
         #print(self.fenetre_graph.Matrice)
 
-        if self.fenetre_graph.Matrice is not None :
+        if self.fenetre_graph.update_graph.Matrice is not None :
             #print(self.Longitude,self.Latitude)
-            self.centre = (self.Longitude[0],self.Latitude[0])
+            self.centre = (np.mean(self.Longitude[0]),np.mean(self.Latitude[0]))
             #self.centre = (-1.7458099,48.0453455)
             self.marge = 0.002
             self.extent = tilemapbase.Extent.from_lonlat(self.centre[0] - self.marge, self.centre[0] + self.marge,self.centre[1] - self.marge, self.centre[1] + self.marge)
@@ -75,7 +77,7 @@ class Affichage_GPS(QWidget):
 
 
     def gps_waypoints(self):
-        if self.fenetre_graph.Matrice is not None :
+        if self.fenetre_graph.update_graph.Matrice is not None :
             self.axe.clear()
         #self.affichage_carte = False
             self.gps_carte_fond()

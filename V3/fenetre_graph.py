@@ -1,5 +1,5 @@
 from PySide2.QtWidgets import QMainWindow,QWidget,QPushButton,QVBoxLayout,QApplication,QLabel,QHBoxLayout
-from PySide2.QtCore import QThread,QTimer
+from PySide2.QtCore import QThread,QTimer,Qt
 from PySide2.QtGui import QPen,QColor
 from Client import Client
 import pyqtgraph as pg
@@ -10,15 +10,26 @@ recu = None
 
 class Fenetre_graph (QWidget):
 
-    def __init__(self,hote,port):
+    def __init__(self,hote,port,port2):
         super().__init__()
+
+
+        self.connecte = False
         self.connexion = None
+        self.connexion2 = None
         self.hote = hote
         self.port = port
+        self.port2 = port2
 
+        self.Liste_shell = []
         self.Matrice = None
 
         self.Donnees = traitement()
+
+        p = self.palette()
+        self.setAutoFillBackground(True)
+        p.setColor(self.backgroundRole(),Qt.black)
+        self.setPalette(p)
 
         self.graphAcc = pg.PlotWidget()
         self.Legend_Acc = self.graphAcc.addLegend()
@@ -85,6 +96,7 @@ class Fenetre_graph (QWidget):
         self.Timer.timeout.connect(self.text_update)
         #self.Timer.timeout.connect(self.graph_update)
         self.Timer.timeout.connect(self.update)
+        self.Timer.timeout.connect(self.text_brute_mise_a_jour)
         self.Timer.setInterval(500)
 
 
@@ -156,12 +168,23 @@ class Fenetre_graph (QWidget):
         self.update_graph.graph_update()
 
         self.Text.setText(recu)
+        self.Text.setStyleSheet('color : white')
+
+
+    def text_brute_mise_a_jour(self) :
+
+        recu = str(self.connexion2.reception)
+        self.Liste_shell = recu.split('_')
+        print(self.Liste_shell)
+
 
     def connection(self):
+        self.connecte = True
         self.connexion = Client(self.hote,self.port)
         print("connexion")
+        self.connexion2 = Client(self.hote,self.port2)
         self.update_graph = graph_thread(self.graphGyro,self.graphAcc,self.graphMagneto,self.graphTemp,self.graphBatt,self.taille_Gyro_x,self.taille_Acc_x,self.taille_Magneto_x,self.taille_Temp_x,self.taille_Batt_x,self.Donnees)
-        self.text_thread = Text_MAJ(self.connexion,self.update_graph)
+        self.text_thread = Text_MAJ(self.connexion,self.connexion2)
 
         #print("init du thread")
         self.text_thread.start()
@@ -172,23 +195,25 @@ class Fenetre_graph (QWidget):
 
     def deconnection(self):
         self.connexion.fin_connexion()
+        self.connexion2.fin_connexion()
         self.Timer.stop()
 
-
-    def update(self):
+"""
+    def update(self):date(self):
         #print("mise a jour")
         #print(self.update_graph.update)
         self.update_graph.update = True
         #print(self.update_graph.update)
 
-
+"""
 class Text_MAJ(QThread):
-    def __init__(self,connexion,update_graph):
+    def __init__(self,connexion,connexion2):
 
         super().__init__()
 
-        self.Client=connexion
-        self.update_graph = update_graph
+        self.Client = connexion
+        self.Client2 = connexion2
+
 
 
     def run(self):
@@ -196,6 +221,7 @@ class Text_MAJ(QThread):
 
             #print(self.Client)
             recu=self.Client.ecoute()
+            recu2=self.Client2.ecoute()
 
             #print("thread >>"+recu.decode())
             #print("entrée dans le thread")
@@ -212,6 +238,7 @@ class graph_thread(QThread):
         self.graphBatt = graphBatt
         self.Donnees  = Donnees
         self.update = False
+        self.Matrice = None
 
         self.taille_Acc_x = taille_Acc_x
         self.taille_Batt_x = taille_Batt_x
@@ -302,6 +329,6 @@ class graph_thread(QThread):
 
 if __name__ == '__main__':
     app = QApplication([])
-    window = Fenetre_graph("192.168.1.70",31000)
+    window = Fenetre_graph("192.168.1.70",31000,56880)
     window.show()
     app.exit(app.exec_())

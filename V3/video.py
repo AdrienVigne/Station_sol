@@ -15,7 +15,6 @@ class camera_view(QWidget):
         self.camera = camera
         self.image_camera = np.zeros((1,1))
         #self.image = QImage()
-        self.client = Client("192.168.1.62",35350)
 
         self.button_up = QToolButton()
         self.button_up.setArrowType(Qt.UpArrow)
@@ -67,6 +66,34 @@ class camera_view(QWidget):
         self.button_right.clicked.connect(self.right)
         self.button_left.clicked.connect(self.left)
 
+        #box enregistrement + photo
+        self.button_debut_video = QPushButton("Début enregistrement Vidéo")
+        self.button_fin_video = QPushButton("Fin enregistrement Vidéo")
+        self.button_photo = QPushButton("Photo")
+        self.box_video_photo = QVBoxLayout()
+        self.box_video_photo.addWidget(self.button_debut_video)
+        self.box_video_photo.addWidget(self.button_fin_video)
+        self.box_video_photo.addWidget(self.button_photo)
+        self.box_panel.addLayout(self.box_video_photo)
+
+
+
+
+
+    def photo(self):
+
+        pass
+
+    def video_debut(self):
+
+        pass
+
+
+    def video_fin(self):
+
+        pass
+
+
 
     def up(self):
         self.client.envoie('up')
@@ -90,6 +117,8 @@ class camera_view(QWidget):
         pass
 
     def Affichage(self):
+        self.client = Client("192.168.1.62",35351)
+
         self.movie_thread.start()
 
     def fin_video(self):

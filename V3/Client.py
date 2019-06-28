@@ -19,6 +19,7 @@ class Client(object):
     def ecoute(self):
         #print("coucou reception msg")
         self.reception = self.sock.recv(1024)
+        #print("Client : ",self.reception)
         #print(self.reception)
         #print("fin reception")
         return self.reception
