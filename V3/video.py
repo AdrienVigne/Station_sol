@@ -85,6 +85,10 @@ class camera_view(QWidget):
         pass
 
     def video_debut(self):
+        self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+        self.out = cv2.VideoWriter('sortie.avi',self.fourcc,20,(640,480))
+        out.write(self.camera.last_frame[1])
+
 
         pass
 
