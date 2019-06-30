@@ -6,7 +6,7 @@ import pyqtgraph as pg
 from donnees import traitement
 from time import sleep
 
-recu = None
+#recu = None
 
 class Fenetre_graph (QWidget):
 
@@ -86,7 +86,7 @@ class Fenetre_graph (QWidget):
         self.button_sauvegarde.clicked.connect(self.sauvergarde)
         self.layout_bouton.addWidget(self.button_sauvegarde)
 
-
+        self.update_graph = None
 
 
 
@@ -169,20 +169,21 @@ class Fenetre_graph (QWidget):
 
 
     def text_update(self):
-        recu=self.connexion.reception.decode()
+        if self.connexion is not None :
+            recu=self.connexion.reception.decode()
 
-        self.update_graph.recu = recu
-        self.update_graph.graph_update()
+            self.update_graph.recu = recu
+            self.update_graph.graph_update()
 
-        self.Text.setText(recu)
-        self.Text.setStyleSheet('color : white')
+            self.Text.setText(recu)
+            self.Text.setStyleSheet('color : white')
 
 
     def text_brute_mise_a_jour(self) :
-
-        recu = str(self.connexion2.reception)
-        self.Liste_shell = recu.split('_')
-        print(self.Liste_shell)
+        if self.connexion2 is not None :
+            recu = str(self.connexion2.reception)
+            self.Liste_shell = recu.split('_')
+            #print(self.Liste_shell)
 
 
     def connection(self):

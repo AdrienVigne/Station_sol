@@ -41,8 +41,8 @@ class shell(QWidget):
         self.fenetre_graph.Timer.timeout.connect(self.text_update)
         #self.Timer.timeout.connect(self.graph_update)
         #self.Timer.timeout.connect(self.update)
-        self.fenetre_graph.Timer.setInterval(500)
-        self.fenetre_graph.Timer.start()
+        #self.fenetre_graph.Timer.setInterval(500)
+        #self.fenetre_graph.Timer.start()
 
     def text_update(self):
 
