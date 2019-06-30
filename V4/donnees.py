@@ -22,3 +22,5 @@ class traitement(object):
         #print("matrice")
         #print(self.Matrice)
         return self.Matrice
+    def enregistrement(self):
+        savetxt("Donnees.csv",self.Matrice,delimiter = ';' ,header = 'Ordre des données : .... ')

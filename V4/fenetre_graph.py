@@ -82,6 +82,11 @@ class Fenetre_graph (QWidget):
         self.layout.addLayout(self.layout_Batt_Temp)
 
 
+        self.button_sauvegarde = QPushButton("Sauvegarde des données")
+        self.button_sauvegarde.clicked.connect(self.sauvergarde)
+        self.layout_bouton.addWidget(self.button_sauvegarde)
+
+
 
 
 
@@ -99,6 +104,8 @@ class Fenetre_graph (QWidget):
         self.Timer.timeout.connect(self.text_brute_mise_a_jour)
         self.Timer.setInterval(500)
 
+    def sauvergarde(self):
+        self.Donnees.enregistrement()
 
     def graphAcc_update(self,I,AccX,AccY,AccZ):
         self.graphAcc.clear()

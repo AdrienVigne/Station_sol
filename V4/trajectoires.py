@@ -6,6 +6,7 @@ from mpl_toolkits.mplot3d import axes3d, Axes3D
 import csv
 from ftplib import FTP
 from Client import Client
+import controle_drone
 
 class widget_trajectoire(QWidget):
     """docstring for widget_trajectoire."""
@@ -97,8 +98,8 @@ class widget_trajectoire(QWidget):
             self.angle_aller = float(self.angle_aller_zone.text())
             self.rayon = float(self.rayon_zone.text())
             self.x = self.rayon * cos(self.theta)
-            self.y = self.rayon * sin(self.theta) * sin(self.angle_aller)
-            self.z = self.rayon * sin(self.theta) * cos(self.angle_aller)
+            self.y = self.rayon * sin(self.theta) * sin(self.angle_aller*pi/180)
+            self.z = self.rayon * sin(self.theta) * cos(self.angle_aller*pi/180)
             self.axe.plot(self.x,self.y,self.z)
 
             self.axe.legend()
@@ -116,6 +117,7 @@ class widget_trajectoire(QWidget):
 
         pass
     def Transferer(self):
+        controle_drone.transfert()
         self.ftp = FTP("192.168.1.6","micro","python")
         self.ftp.sendcmd("CWD flash")
         f = open("trajectoire.csv",'rb')

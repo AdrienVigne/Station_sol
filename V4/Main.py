@@ -24,7 +24,7 @@ fen1.setWindowTitle('Télémétrie')
 
 fen1.showMaximized()
 
-Cam = Camera("http://192.168.1.45:8000/stream.mjpg")
+Cam = Camera("http://192.168.1.41:8000/stream.mjpg")
 Cam.initialize()
 
 GPS = Affichage_GPS(fen1,fen1.Timer)

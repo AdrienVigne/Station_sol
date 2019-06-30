@@ -5,7 +5,7 @@ from Client import Client
 import pyqtgraph as pg
 from Camera import Camera
 import numpy as np
-from Client import Client
+import cv2
 
 class camera_view(QWidget):
     """docstring for camera_view."""
@@ -76,25 +76,35 @@ class camera_view(QWidget):
         self.box_video_photo.addWidget(self.button_photo)
         self.box_panel.addLayout(self.box_video_photo)
 
+        self.enregistrement = Record(self.camera)
+        self.enregistrement.setTerminationEnabled(True)
+
+        self.button_debut_video.clicked.connect(self.video_debut)
+        self.button_fin_video.clicked.connect(self.video_fin)
+        self.button_photo.clicked.connect(self.photo)
+        self.compteur_photo = 0
+
+
+
 
 
 
 
     def photo(self):
+        cv2.imwrite("./photo"+str(self.compteur_photo)+".png",self.camera.last_frame[1])
+        self.compteur_photo += 1
+
 
         pass
 
     def video_debut(self):
-        self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-        self.out = cv2.VideoWriter('sortie.avi',self.fourcc,20,(640,480))
-        out.write(self.camera.last_frame[1])
-
+        self.enregistrement.start()
 
         pass
 
 
     def video_fin(self):
-
+        self.enregistrement.stop()
         pass
 
 
@@ -121,7 +131,7 @@ class camera_view(QWidget):
         pass
 
     def Affichage(self):
-        self.client = Client("192.168.1.62",35351)
+        #self.client = Client("192.168.1.6",35351)
 
         self.movie_thread.start()
 
@@ -164,12 +174,40 @@ class MovieThread(QThread):
         self.terminate()
 
 
+class Record(QThread):
+    """docstring for Record."""
+
+    def __init__(self, camera):
+        super().__init__()
+        self.camera = camera
+        self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+        self.out = cv2.VideoWriter('sortie.avi',self.fourcc,20,(640,480))
+        self.nombre = 0
+
+    def run(self):
+        while 1:
+            #print(self.camera.last_frame)
+            if self.camera.last_frame is not np.zeros((1,1)):
+                #print("coucou")
+                #self.image_camera = self.camera.last_frame[1]
+
+                self.out.write(self.camera.last_frame[1])
+                self.nombre += 1
+                #print(self.nombre)
+                #print("coucou")
+
+    def stop(self):
+        self.out.release()
+        self.terminate()
+
+
+
 
 
 
 if __name__ == '__main__':
     app = QApplication([])
-    C = Camera("http://192.168.1.45:8000/stream.mjpg")
+    C = Camera("http://192.168.1.41:8000/stream.mjpg")
     C.initialize()
     window = camera_view(C)
     window.show()

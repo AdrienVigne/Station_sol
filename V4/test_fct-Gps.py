@@ -11,7 +11,8 @@ tilemapbase.init(create=True)
 centre0  = (-1.7545,48.045)
 marge = 0.0005
 
-theta = np.linspace(0,np.pi,20)
+theta = np.linspace(np.pi/2,3*np.pi/2,20)
+#theta = - theta
 angle_aller = (20/180)*np.pi
 rayon = 20
 
