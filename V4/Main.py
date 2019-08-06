@@ -16,7 +16,7 @@ if not app:
 
 
 #app.setWindowIcon(QIcon('/media/cnes-inisat/Donnees/Mega/python/Client/inisat.jpg'))
-fen1 = Fenetre_graph("192.168.1.6",31000,56880)
+fen1 = Fenetre_graph("192.168.1.70",31000,56880,35000)
 fen1.setWindowTitle('Télémétrie')
 #fen1.move(QPoint(1080,0))
 
@@ -24,16 +24,18 @@ fen1.setWindowTitle('Télémétrie')
 
 fen1.showMaximized()
 
-Cam = Camera("http://192.168.1.41:8000/stream.mjpg")
+Cam = Camera("http://192.168.1.62:8000/stream.mjpg")
 Cam.initialize()
 
 GPS = Affichage_GPS(fen1,fen1.Timer)
-box_fen2  = QHBoxLayout()
-box_fen2.addWidget(GPS)
-box_fen2.addWidget(camera_view(Cam))
+
+
 box2=QVBoxLayout()
-box2.addLayout(box_fen2)
-box2.addWidget(shell(fen1))
+box2.addWidget(GPS)
+box_2_fen2 = QHBoxLayout()
+box_2_fen2.addWidget(shell(fen1))
+box_2_fen2.addWidget(camera_view(Cam))
+box2.addLayout(box_2_fen2)
 fen2 = QWidget()
 
 p = fen2.palette()
@@ -46,7 +48,7 @@ fen2.setWindowTitle('GPS_Vidéo_Shell')
 fen2.show()
 
 
-
+"""
 fen3 = QWidget()
 box = QVBoxLayout()
 
@@ -55,6 +57,6 @@ fen3.setWindowTitle("Controle Drone")
 fen3.setLayout(box)
 fen3.show()
 
-
+"""
 
 app.exec_()

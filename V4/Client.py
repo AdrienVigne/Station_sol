@@ -34,7 +34,8 @@ class Client(object):
 
 
 if __name__=='__main__':
-    C=Client("192.168.1.70",31000)
+    C=Client("192.168.1.70",35000)
     while 1:
         print(C.ecoute())
+
         print("")

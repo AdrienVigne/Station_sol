@@ -14,7 +14,7 @@ class widget_trajectoire(QWidget):
     def __init__(self):
         super(widget_trajectoire, self).__init__()
 
-        self.client = Client("192.168.1.6",35170)
+        self.client = Client("192.168.1.70",35170)
 
         self.angle_aller = 0
         self.angle_retour = 0
@@ -117,8 +117,8 @@ class widget_trajectoire(QWidget):
 
         pass
     def Transferer(self):
-        controle_drone.transfert()
-        self.ftp = FTP("192.168.1.6","micro","python")
+        #controle_drone.transfert()
+        self.ftp = FTP("192.168.1.70","micro","python")
         self.ftp.sendcmd("CWD flash")
         f = open("trajectoire.csv",'rb')
         self.ftp.storbinary('STOR trajectoire.csv',f)

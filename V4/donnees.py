@@ -10,6 +10,7 @@ class traitement(object):
         self.I = 0
 
     def matrice(self,recu):
+        #print("recu : ",recu)
         self.data = recu[1:len(recu)-3].split(',')
 
         self.I = self.I+1
@@ -22,5 +23,6 @@ class traitement(object):
         #print("matrice")
         #print(self.Matrice)
         return self.Matrice
+
     def enregistrement(self):
         savetxt("Donnees.csv",self.Matrice,delimiter = ';' ,header = 'Ordre des données : .... ')

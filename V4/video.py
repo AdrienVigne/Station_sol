@@ -6,6 +6,7 @@ import pyqtgraph as pg
 from Camera import Camera
 import numpy as np
 import cv2
+from time import time
 
 class camera_view(QWidget):
     """docstring for camera_view."""
@@ -85,6 +86,16 @@ class camera_view(QWidget):
         self.compteur_photo = 0
 
 
+        self.enregistrement.start()
+        self.timer_enregistrement = QTimer()
+        self.timer_enregistrement.setInterval((1/24)*1000)
+        self.timer_enregistrement.timeout.connect(self.video)
+        #self.Timer.setInterval(500)
+
+
+    def video(self):
+        self.enregistrement.video()
+        pass
 
 
 
@@ -98,13 +109,17 @@ class camera_view(QWidget):
         pass
 
     def video_debut(self):
-        self.enregistrement.start()
+        self.timer_enregistrement.start()
 
         pass
 
 
     def video_fin(self):
+        print("nombre photo ",self.enregistrement.nombre)
+        self.enregistrement.nombre = 0
+        self.timer_enregistrement.stop()
         self.enregistrement.stop()
+
         pass
 
 
@@ -131,7 +146,7 @@ class camera_view(QWidget):
         pass
 
     def Affichage(self):
-        #self.client = Client("192.168.1.6",35351)
+        self.client = Client("192.168.1.62",35351)
 
         self.movie_thread.start()
 
@@ -153,9 +168,11 @@ class MovieThread(QThread):
 
 
     def run(self):
+
         while 1 :
             #print("thread")
             self.camera.movie()
+
             if self.camera.last_frame is not np.zeros((1,1)):
                 #print("coucou")
                 self.image_camera = self.camera.last_frame[1]
@@ -181,11 +198,18 @@ class Record(QThread):
         super().__init__()
         self.camera = camera
         self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-        self.out = cv2.VideoWriter('sortie.avi',self.fourcc,20,(640,480))
+        self.out = cv2.VideoWriter('sortie.avi',self.fourcc,24,(640,480))
         self.nombre = 0
 
     def run(self):
-        while 1:
+        """"
+        #t1 = time()
+        #t2 = time()
+        self.nombre = 0
+        t1 = time()
+        t2 = time()
+
+        while t2-t1<10:
             #print(self.camera.last_frame)
             if self.camera.last_frame is not np.zeros((1,1)):
                 #print("coucou")
@@ -193,9 +217,24 @@ class Record(QThread):
 
                 self.out.write(self.camera.last_frame[1])
                 self.nombre += 1
+                t3 = time()
+                t4= time()
+                while t3-t4<1/24:
+                    t3 = time()
+                t2=time()
+                #print(t2-t1)
                 #print(self.nombre)
                 #print("coucou")
 
+        print("fin video n ",self.nombre,' images')
+        self.stop()
+        pass
+        """
+
+    def video(self):
+        self.out.write(self.camera.last_frame[1])
+        self.nombre += 1
+        pass
     def stop(self):
         self.out.release()
         self.terminate()
@@ -207,7 +246,7 @@ class Record(QThread):
 
 if __name__ == '__main__':
     app = QApplication([])
-    C = Camera("http://192.168.1.41:8000/stream.mjpg")
+    C = Camera("http://192.168.1.62:8000/stream.mjpg")
     C.initialize()
     window = camera_view(C)
     window.show()

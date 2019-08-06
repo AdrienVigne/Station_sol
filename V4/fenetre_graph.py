@@ -10,17 +10,21 @@ from time import sleep
 
 class Fenetre_graph (QWidget):
 
-    def __init__(self,hote,port,port2):
+    def __init__(self,hote,port,port2,port_gps):
         super().__init__()
 
 
         self.connecte = False
         self.connexion = None
-        self.connexion2 = None
+        self.connexion_brute = None
+        self.connexion_gps = None
         self.hote = hote
-        self.port = port
-        self.port2 = port2
+        self.port_donnees = port
+        self.port_brute = port2
+        self.port_gps = port_gps
 
+
+        self.position_antenne = None
         self.Liste_shell = []
         self.Matrice = None
 
@@ -100,72 +104,22 @@ class Fenetre_graph (QWidget):
         self.Timer = QTimer()
         self.Timer.timeout.connect(self.text_update)
         #self.Timer.timeout.connect(self.graph_update)
-        self.Timer.timeout.connect(self.update)
+        #self.Timer.timeout.connect(self.update_gps)
         self.Timer.timeout.connect(self.text_brute_mise_a_jour)
+        self.Timer.timeout.connect(self.update_position_antenne)
         self.Timer.setInterval(500)
 
     def sauvergarde(self):
         self.Donnees.enregistrement()
 
-    def graphAcc_update(self,I,AccX,AccY,AccZ):
-        self.graphAcc.clear()
 
-        if (I[-1] > self.taille_Acc_x) :
-            self.graphAcc.setXRange(I[-1]-self.taille_Acc_x,I[-1],padding = 0)
+    def update_position_antenne(self):
+        if self.connexion_gps is not None :
+            if self.connexion_gps.reception.decode() != 'Attente reception' :
 
-        self.graphAcc.plot(I,AccX,pen='r',name="Accelerometre X")
-        self.graphAcc.plot(I,AccY,pen='g',name="Accelerometre Y")
-        self.graphAcc.plot(I,AccZ,pen='b',name="Accelerometre Z")
-
-    def graphGyro_update(self,I,GyroX,GyroY,GyroZ):
-        self.graphGyro.clear()
-
-        if (I[-1] > self.taille_Gyro_x) :
-            self.graphGyro.setXRange(I[-1]-self.taille_Gyro_x,I[-1],padding = 0)
-
-        self.graphGyro.plot(I,GyroX,pen='r',name="Gyroscope X")
-        self.graphGyro.plot(I,GyroY,pen='g',name="Gyroscope Y")
-        self.graphGyro.plot(I,GyroZ,pen='b',name="Gyroscope Z")
-
-    def graphMagneto_update(self,I,MagnetoX,MagnetoY,MagnetoZ):
-        self.graphMagneto.clear()
-
-        if (I[-1] > self.taille_Magneto_x) :
-            self.graphMagneto.setXRange(I[-1]-self.taille_Magneto_x,I[-1],padding = 0)
-
-        self.graphMagneto.plot(I,MagnetoX,pen='r',name="Magnetometre X")
-        self.graphMagneto.plot(I,MagnetoY,pen='g',name="Magnetometre Y")
-        self.graphMagneto.plot(I,MagnetoZ,pen='b',name="Magnetometre Z")
-
-    def graphTemp_update(self,I,Temp):
-        self.graphTemp.clear()
-
-        if (I[-1] > self.taille_Temp_x) :
-            self.graphTemp.setXRange(I[-1]-self.taille_Temp_x,I[-1],padding = 0)
-
-        self.graphTemp.plot(I,Temp,name="Température")
-
-    def graphBatt_update(self,I,Batt):
-        self.graphBatt.clear()
-
-        if (I[-1] > self.taille_Batt_x) :
-            self.graphBatt.setXRange(I[-1]-self.taille_Batt_x,I[-1],padding = 0)
-
-        self.graphBatt.plot(I,Batt,name="Tension Batterie")
-
-
-    def graph_update(self):
-        #print(recu)
-        if recu != 'Attente reception':
-            #print("mise a jour ")
-            self.Matrice = self.Donnees.matrice(recu)
-            self.graphGyro_update(self.Matrice[1:,0],self.Matrice[1:,1],self.Matrice[1:,2],self.Matrice[1:,3])
-            self.graphAcc_update(self.Matrice[1:,0],self.Matrice[1:,4],self.Matrice[1:,5],self.Matrice[1:,6])
-            self.graphMagneto_update(self.Matrice[1:,0],self.Matrice[1:,7],self.Matrice[1:,8],self.Matrice[1:,9])
-            self.graphTemp_update(self.Matrice[1:,0],self.Matrice[1:,-1])
-            self.graphBatt_update(self.Matrice[1:,0],self.Matrice[1:,-2])
-
-
+                self.position_antenne = self.connexion_gps.reception.decode().split(";")
+                self.position_antenne = [float(x) for x in self.position_antenne]
+                #print(self.position_antenne)
 
 
     def text_update(self):
@@ -180,59 +134,72 @@ class Fenetre_graph (QWidget):
 
 
     def text_brute_mise_a_jour(self) :
-        if self.connexion2 is not None :
-            recu = str(self.connexion2.reception)
+        if self.connexion_brute is not None :
+            recu = str(self.connexion_brute.reception)
             self.Liste_shell = recu.split('_')
             #print(self.Liste_shell)
 
 
     def connection(self):
         self.connecte = True
-        self.connexion = Client(self.hote,self.port)
-        print("connexion")
-        self.connexion2 = Client(self.hote,self.port2)
+        self.connexion = Client(self.hote,self.port_donnees)
+        #print("connexion")
+        self.connexion_brute = Client(self.hote,self.port_brute)
+        self.connexion_gps = Client(self.hote,self.port_gps)
         self.update_graph = graph_thread(self.graphGyro,self.graphAcc,self.graphMagneto,self.graphTemp,self.graphBatt,self.taille_Gyro_x,self.taille_Acc_x,self.taille_Magneto_x,self.taille_Temp_x,self.taille_Batt_x,self.Donnees)
-        self.text_thread = Text_MAJ(self.connexion,self.connexion2)
-
+        self.text_thread = Text_MAJ(self.connexion,self.connexion_brute,self.connexion_gps)
+        self.gps_update = gps_thread(self.connexion_gps)
+        self.gps_update.start()
         #print("init du thread")
         self.text_thread.start()
         self.update_graph.start()
+
         #self.update_graph.start()
         self.Timer.start()
         #print("thread lancé")
 
     def deconnection(self):
         self.connexion.fin_connexion()
-        self.connexion2.fin_connexion()
+        self.connexion_brute.fin_connexion()
+        self.connexion_gps.fin_connexion()
         self.Timer.stop()
 
-"""
-    def update(self):date(self):
-        #print("mise a jour")
-        #print(self.update_graph.update)
-        self.update_graph.update = True
-        #print(self.update_graph.update)
-
-"""
 class Text_MAJ(QThread):
-    def __init__(self,connexion,connexion2):
+    def __init__(self,connexion,connexion_brute,connexion_gps):
 
         super().__init__()
 
         self.Client = connexion
-        self.Client2 = connexion2
+        self.Client2 = connexion_brute
+        #self.Client_gps = connexion_gps
 
 
 
     def run(self):
         while 1:
-
+            #print("coucou")
             #print(self.Client)
             recu=self.Client.ecoute()
             recu2=self.Client2.ecoute()
-
-            #print("thread >>"+recu.decode())
+            #recu_gps=self.Client_gps.ecoute()
+            #print("thread >>"+recu_gps.decode())
             #print("entrée dans le thread")
+
+class gps_thread(QThread):
+
+    def __init__(self,connexion_gps):
+        super().__init__()
+        self.Client_gps = connexion_gps
+        print('init gps')
+
+
+    def run(self):
+        while 1 :
+            #print('reception_gps')
+            recu_gps=self.Client_gps.ecoute()
+            #print("thread >>"+recu_gps.decode())
+            pass
+
 
 class graph_thread(QThread):
     recu = None
@@ -337,6 +304,6 @@ class graph_thread(QThread):
 
 if __name__ == '__main__':
     app = QApplication([])
-    window = Fenetre_graph("192.168.1.6",31000,56880)
+    window = Fenetre_graph("192.168.1.70",31000,56880,35000)
     window.show()
     app.exit(app.exec_())
