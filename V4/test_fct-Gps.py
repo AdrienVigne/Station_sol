@@ -8,8 +8,8 @@ tilemapbase.init(create=True)
 
 
 
-centre0  = (-1.7545,48.045)
-marge = 0.0005
+centre0  = (1.282369,43.92071)
+marge = 0.05
 
 theta = np.linspace(np.pi/2,3*np.pi/2,20)
 #theta = - theta
@@ -46,26 +46,29 @@ print(rho0,phi0,theta0)
 X = [x0+X for X in x_t]
 Y = [y0+Y for Y in y_t]
 Z = [z0+Z for Z in z_t]
-phi=[]
-theta=[]
+print('XYZ : ' ,X,Y,Z)
+print("")
+Longitude=[]
+Latitude=[]
 print(len(X))
 for i in range(len(X)):
     rho =np.sqrt( (X[i]**2)+(Y[i]**2)+(Z[i]**2))
-    phi_temp = np.arccos(Z[i]/rho)*180/np.pi
-    if phi_temp > 90 :
-        phi_temp = 90 -phi_temp
-    phi.append(phi_temp)
+    Longitude_temp = np.arcsin(Z[i]/rho)*180/np.pi
+    if Longitude_temp > 90 :
+        Longitude_temp = 90 - Longitude_temp
+    Longitude.append(Longitude_temp)
 
-    theta.append(np.arctan(Y[i]/X[i])*180/np.pi)
-print(theta,phi)
+    Latitude.append(np.arctan(Y[i]/X[i])*180/np.pi)
+#return Longitude,Latitude
+print("COUCOU",Latitude,Longitude)
 
-path = [tilemapbase.project(x,y) for x,y in zip(phi,theta)]
+path = [tilemapbase.project(x,y) for x,y in zip(Longitude,Latitude)]
 x, y = zip(*path)
 #print(np.mean(x))
-centre=(np.mean(phi),np.mean(theta))
+centre=(centre0[0],centre0[1])
 extent = tilemapbase.Extent.from_lonlat(centre[0] - marge, centre[0] + marge,centre[1] - marge, centre[1] + marge)
 extent = extent.to_aspect(1.0)
-fig, ax = plt.subplots(figsize=(8, 8), dpi=100)
+fig, ax = plt.subplots(figsize=(10, 10), dpi=100)
 ax.xaxis.set_visible(False)
 ax.yaxis.set_visible(False)
 

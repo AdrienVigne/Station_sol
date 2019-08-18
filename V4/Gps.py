@@ -113,7 +113,7 @@ class thread_altitude(QThread):
             self.graph_altitude.setXRange(self.X[-1]-self.taille_altitude,self.X[-1],padding = 0)
 
         self.graph_altitude.plot(self.X,Alti,pen='r',name="Altitude (m)")
-        print("coucou")
+        #print("coucou")
 
 
 
@@ -173,7 +173,7 @@ class gps_thread(QThread):
                 else :
                     self.centre = (np.mean(self.Longitude[0]),np.mean(self.Latitude[0]))
                     print("centre : ",self.centre)
-                    print("self.position_antenne :",self.position_antenne)
+                print("self.position_antenne :",self.position_antenne)
         #self.centre = (-1.7458099,48.0453455)
                 self.marge = 0.003
                 self.extent = tilemapbase.Extent.from_lonlat(self.centre[0] - self.marge, self.centre[0] + self.marge,self.centre[1] - self.marge, self.centre[1] + self.marge)

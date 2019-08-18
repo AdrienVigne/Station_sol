@@ -9,6 +9,7 @@ from video import camera_view
 from Camera import Camera
 from trajectoires import widget_trajectoire
 from shell import shell
+from traj_drone import traj_drone
 
 app = QApplication.instance()
 if not app:
@@ -48,15 +49,19 @@ fen2.setWindowTitle('GPS_Vidéo_Shell')
 fen2.show()
 
 
-"""
-fen3 = QWidget()
-box = QVBoxLayout()
 
-box.addWidget(widget_trajectoire())
+fen3 = QWidget()
+boxV = QVBoxLayout()
+boxH=QHBoxLayout()
+fen_traj_math = widget_trajectoire()
+boxH.addWidget(traj_drone(fen1,fen_traj_math))
+boxH.addWidget(fen_traj_math)
+
+boxV.addLayout(boxH)
 fen3.setWindowTitle("Controle Drone")
-fen3.setLayout(box)
+fen3.setLayout(boxV)
 fen3.show()
 
-"""
+
 
 app.exec_()

@@ -19,7 +19,7 @@ class widget_trajectoire(QWidget):
         self.angle_aller = 0
         self.angle_retour = 0
         self.rayon = 10
-        self.theta = linspace(0,pi,600)
+        self.theta = linspace(0,pi,200)
 
         self.graph = mw.MatplotlibWidget()
         self.plot = self.graph.getFigure()
@@ -91,6 +91,10 @@ class widget_trajectoire(QWidget):
         self.boutton_transferer.clicked.connect(self.Transferer)
         self.boutton_mouvement.clicked.connect(self.Mouvement)
 
+        self.x = None
+        self.y = None
+        self.z = None
+
     def Tracer(self):
         #print(self.angle_aller_zone.text())
         if (self.angle_aller_zone.text() != ""):
@@ -98,9 +102,10 @@ class widget_trajectoire(QWidget):
             self.angle_aller = float(self.angle_aller_zone.text())
             self.rayon = float(self.rayon_zone.text())
             self.x = self.rayon * cos(self.theta)
-            self.y = self.rayon * sin(self.theta) * sin(self.angle_aller*pi/180)
-            self.z = self.rayon * sin(self.theta) * cos(self.angle_aller*pi/180)
+            self.y = self.rayon * sin(self.theta) * sin((self.angle_aller/180)*pi)
+            self.z = self.rayon * sin(self.theta) * cos((self.angle_aller/180)*pi)
             self.axe.plot(self.x,self.y,self.z)
+            print(self.x,self.y,self.z)
 
             self.axe.legend()
             self.graph.draw()
